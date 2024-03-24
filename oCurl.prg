@@ -277,17 +277,17 @@
 
 CLASS oCurl INHERIT HObject
 	EXPORT	aDefOptions	INIT {}				// Default options
-	EXPORT	baseUrl		INIT ""				// Базовый url для запросов
-	EXPORT	TLScert		INIT "curl-ca-bundle.crt"	// Путь к сертификату TLS/SSL
+	EXPORT	baseUrl		INIT ""				// Р‘Р°Р·РѕРІС‹Р№ url РґР»СЏ Р·Р°РїСЂРѕСЃРѕРІ
+	EXPORT	TLScert		INIT "curl-ca-bundle.crt"	// РџСѓС‚СЊ Рє СЃРµСЂС‚РёС„РёРєР°С‚Сѓ TLS/SSL
 	EXPORT	lCurlExe	INIT .F.			// .T. - curl.exe, .F. - libcurl
-	EXPORT	iLog 		INIT 0			// /log=	0	Ничего не выводим
-							//		1	Ошибки
-							//		2	Основной протокол
-							//		4	Трассировка важных сообщений
-							//		8	Трассировка всех сообщений
-							//		16	Сохранение запросов и ответов
-							//		32	Игнорировать ошибки в дате
-							//		64	Автозапуск гашения без меню
+	EXPORT	iLog 		INIT 0			// /log=	0	РќРёС‡РµРіРѕ РЅРµ РІС‹РІРѕРґРёРј
+							//		1	РћС€РёР±РєРё
+							//		2	РћСЃРЅРѕРІРЅРѕР№ РїСЂРѕС‚РѕРєРѕР»
+							//		4	РўСЂР°СЃСЃРёСЂРѕРІРєР° РІР°Р¶РЅС‹С… СЃРѕРѕР±С‰РµРЅРёР№
+							//		8	РўСЂР°СЃСЃРёСЂРѕРІРєР° РІСЃРµС… СЃРѕРѕР±С‰РµРЅРёР№
+							//		16	РЎРѕС…СЂР°РЅРµРЅРёРµ Р·Р°РїСЂРѕСЃРѕРІ Рё РѕС‚РІРµС‚РѕРІ
+							//		32	РРіРЅРѕСЂРёСЂРѕРІР°С‚СЊ РѕС€РёР±РєРё РІ РґР°С‚Рµ
+							//		64	РђРІС‚РѕР·Р°РїСѓСЃРє РіР°С€РµРЅРёСЏ Р±РµР· РјРµРЅСЋ
 
 	METHOD CleanUp(h)			INLINE CURL_EASY_CLEANUP(h)
 	METHOD Close()				INLINE CURL_GLOBAL_CLEANUP()
@@ -298,12 +298,12 @@ CLASS oCurl INHERIT HObject
 	METHOD GetInfo(h, iType, nError)	INLINE CURL_EASY_GETINFO(h, iType, @nError)	// curl_easy_getinfo( curl, x, @nError ) -> xValue
 	METHOD Handle()				INLINE CURL_EASY_INIT()
 	METHOD New(baseUrl, lCurlExe, TLScert, iLog, aOptions, iGlobalSettings)
-	METHOD outLog(iFlag, cMsg, cAdd)							// Вывод сообщений
+	METHOD outLog(iFlag, cMsg, cAdd)							// Р’С‹РІРѕРґ СЃРѕРѕР±С‰РµРЅРёР№
 	METHOD Pause(h, iPause)			INLINE CURL_EASY_PAUSE(h, iPause)
 	METHOD Perform(h)			INLINE CURL_EASY_PERFORM(h)
 	METHOD Recieve(h, cBuffer)		INLINE CURL_EASY_RECV(h, @cBuffer)		// curl_easy_recv( curl, @cBuffer ) -> nResult
 	METHOD Reset(h)				INLINE CURL_EASY_RESET(h)
-	METHOD Run(aAct, aOptions, cIn)								// Запрос curl
+	METHOD Run(aAct, aOptions, cIn)								// Р—Р°РїСЂРѕСЃ curl
 	METHOD Send(h, cBuffer, nSentBytes)	INLINE CURL_EASY_SEND(h, cBuffer, @nSentBytes)	// curl_easy_send( curl, cBuffer, @nSentBytes ) -> nResult
 	METHOD SetOpt(h, iOption, uOption)	INLINE CURL_EASY_SETOPT(h, iOption, uOption)
 	METHOD StrError(nError)			INLINE CURL_EASY_STRERROR(nError)
@@ -329,7 +329,7 @@ METHOD New(baseUrl, lCurlExe, TLScert, iLog, aOptions, iGlobalSettings) CLASS oC
 	RETURN IIF(r = 0, SELF, NIL)
 
 //---------- oCurl:outLog ----------------------------------------------------------------------------------------------------------
-METHOD outLog(iFlag, cMsg, cAdd) CLASS oCurl		// Вывод сообщений
+METHOD outLog(iFlag, cMsg, cAdd) CLASS oCurl		// Р’С‹РІРѕРґ СЃРѕРѕР±С‰РµРЅРёР№
 	IF IsSet(iFlag, ::ILog)
 		IF iFlag = 1 .OR. cMsg = "*"
 			LogErr(cMsg, cAdd)
@@ -343,10 +343,10 @@ METHOD outLog(iFlag, cMsg, cAdd) CLASS oCurl		// Вывод сообщений
 	RETURN .T.
 
 //---------- oCurl:Run ------------------------------------------------------------------------------------------------------------
-METHOD Run(aAct, aOptions, cIn) CLASS oCurl	// Запрос curl
-							// aAct:	{Переменная часть url, Шаблон curl.exe}
-							// aOptions:	Для curl.exe - список доп. параметров &1, &2...
-							//		для libcurl - список для :SetOpt
+METHOD Run(aAct, aOptions, cIn) CLASS oCurl	// Р—Р°РїСЂРѕСЃ curl
+							// aAct:	{РџРµСЂРµРјРµРЅРЅР°СЏ С‡Р°СЃС‚СЊ url, РЁР°Р±Р»РѕРЅ curl.exe}
+							// aOptions:	Р”Р»СЏ curl.exe - СЃРїРёСЃРѕРє РґРѕРї. РїР°СЂР°РјРµС‚СЂРѕРІ &1, &2...
+							//		РґР»СЏ libcurl - СЃРїРёСЃРѕРє РґР»СЏ :SetOpt
 							// cIn:		Data to POST
 	LOCAL j, r, curlHandle, curlErr, cDopUrl, cTempl, cBat, cLog
 	LOCAL cToken
@@ -355,7 +355,7 @@ METHOD Run(aAct, aOptions, cIn) CLASS oCurl	// Запрос curl
 	IF ValType(aOptions) = "C";	aOptions := {aOptions};		ENDIF
 	cDopUrl := aAct[1]
 	cTempl  := aAct[2]
-	IF !Empty(aOptions);		cToken := aOptions[1];		ENDIF	// Выделение token, чтоб не гнать его в log
+	IF !Empty(aOptions);		cToken := aOptions[1];		ENDIF	// Р’С‹РґРµР»РµРЅРёРµ token, С‡С‚РѕР± РЅРµ РіРЅР°С‚СЊ РµРіРѕ РІ log
 
 	IF !("HTTP" $ Upper(cDopUrl));	cDopUrl := ::baseUrl + cDopUrl;	ENDIF
 
@@ -378,7 +378,7 @@ METHOD Run(aAct, aOptions, cIn) CLASS oCurl	// Запрос curl
 			hb_Memowrit("curl.bat", cBat + CRLF)
 			hb_Run("curl.bat")
 			IF !FWait("curlout.txt")
-				ErrMes("Нет ответа от curl " + cTempl)
+				ErrMes("РќРµС‚ РѕС‚РІРµС‚Р° РѕС‚ curl " + cTempl)
 			ELSE
 				r := hb_Memoread("curlout.txt")
 			ENDIF
