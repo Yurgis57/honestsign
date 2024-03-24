@@ -1,67 +1,67 @@
 // From Z:\Harbour\hb32\tests\ipsvr.prg 
-// Проверял: КриптоПро 4.0. ..., РуТокен ЭЦП 2.0
-// -	Если нет сертификата из РуТокена в Личных сертификатах - переустановить Драйверы РуТокен с их сайта. Появился.
-// -	В КриптоПро можно настроить кэширование PIN ("Безопасность"). Но можно и через KeyPin. Иначе спрашивает каждый раз
-// -	Похоже, CAPICOM не умеет делать CADES_BES. Поэтому - CADESCOM.
-// -	В oSignedData:Content := ... один раз возникла ошибка "Недопустимые данные" - хз откуда
-// -	ThumbPrint сертификата:
-//		XP	Пуск - Панель управления - Свойства браузера - Содержание - Сертификаты - Свойства 
-//		Win10	Пуск - Параметры - Найти параметр - Серт... - Управление сертификатами пользователей - Личное (certmgr)
+// РџСЂРѕРІРµСЂСЏР»: РљСЂРёРїС‚РѕРџСЂРѕ 4.0. ..., Р СѓРўРѕРєРµРЅ Р­Р¦Рџ 2.0
+// -	Р•СЃР»Рё РЅРµС‚ СЃРµСЂС‚РёС„РёРєР°С‚Р° РёР· Р СѓРўРѕРєРµРЅР° РІ Р›РёС‡РЅС‹С… СЃРµСЂС‚РёС„РёРєР°С‚Р°С… - РїРµСЂРµСѓСЃС‚Р°РЅРѕРІРёС‚СЊ Р”СЂР°Р№РІРµСЂС‹ Р СѓРўРѕРєРµРЅ СЃ РёС… СЃР°Р№С‚Р°. РџРѕСЏРІРёР»СЃСЏ.
+// -	Р’ РљСЂРёРїС‚РѕРџСЂРѕ РјРѕР¶РЅРѕ РЅР°СЃС‚СЂРѕРёС‚СЊ РєСЌС€РёСЂРѕРІР°РЅРёРµ PIN ("Р‘РµР·РѕРїР°СЃРЅРѕСЃС‚СЊ"). РќРѕ РјРѕР¶РЅРѕ Рё С‡РµСЂРµР· KeyPin. РРЅР°С‡Рµ СЃРїСЂР°С€РёРІР°РµС‚ РєР°Р¶РґС‹Р№ СЂР°Р·
+// -	РџРѕС…РѕР¶Рµ, CAPICOM РЅРµ СѓРјРµРµС‚ РґРµР»Р°С‚СЊ CADES_BES. РџРѕСЌС‚РѕРјСѓ - CADESCOM.
+// -	Р’ oSignedData:Content := ... РѕРґРёРЅ СЂР°Р· РІРѕР·РЅРёРєР»Р° РѕС€РёР±РєР° "РќРµРґРѕРїСѓСЃС‚РёРјС‹Рµ РґР°РЅРЅС‹Рµ" - С…Р· РѕС‚РєСѓРґР°
+// -	ThumbPrint СЃРµСЂС‚РёС„РёРєР°С‚Р°:
+//		XP	РџСѓСЃРє - РџР°РЅРµР»СЊ СѓРїСЂР°РІР»РµРЅРёСЏ - РЎРІРѕР№СЃС‚РІР° Р±СЂР°СѓР·РµСЂР° - РЎРѕРґРµСЂР¶Р°РЅРёРµ - РЎРµСЂС‚РёС„РёРєР°С‚С‹ - РЎРІРѕР№СЃС‚РІР° 
+//		Win10	РџСѓСЃРє - РџР°СЂР°РјРµС‚СЂС‹ - РќР°Р№С‚Рё РїР°СЂР°РјРµС‚СЂ - РЎРµСЂС‚... - РЈРїСЂР°РІР»РµРЅРёРµ СЃРµСЂС‚РёС„РёРєР°С‚Р°РјРё РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№ - Р›РёС‡РЅРѕРµ (certmgr)
 
-// Сработало, наконец (получил  token):
+// РЎСЂР°Р±РѕС‚Р°Р»Рѕ, РЅР°РєРѕРЅРµС† (РїРѕР»СѓС‡РёР»  token):
 // curl -o curlout0.txt -H "content-type: application/json;charset=UTF-8" --data-binary @curlin0.txt https://ismp.crpt.ru/api/v3/auth/cert/ >errors.txt
 
-// Пример запросов на разагрегирование:
-// Из документации
+// РџСЂРёРјРµСЂ Р·Р°РїСЂРѕСЃРѕРІ РЅР° СЂР°Р·Р°РіСЂРµРіРёСЂРѕРІР°РЅРёРµ:
+// РР· РґРѕРєСѓРјРµРЅС‚Р°С†РёРё
 // 1 (MWWRuza): https://ismotp.crptech.ru/private-office-api/private/v2/cis/aggregated?cis=%2801%2904600439935605%2821%29YUrW80L800510000093heav24014422555
-// 2 (ИС МОТП): GET https://ismotp.crptech.ru/private-office-api/private/v2/cis/aggregated/{КМ} HTTP/1.1
+// 2 (РРЎ РњРћРўРџ): GET https://ismotp.crptech.ru/private-office-api/private/v2/cis/aggregated/{РљРњ} HTTP/1.1
 //	Content-Type: application/json
 //	Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI0MSIsImNuIjoiZm9pdiIsInBpZCI6MTExMSwiaW5uIjoiNzcwNzMyOTE1MiIsInBlcm1zIjoiMDlhMCJ9.0Ju2MwpcGGk_Qtjf9AWGoludQ-mIY760K7aYZtQCeVK6kTDMFfKo6Pr7X8CwEdyWfO2L1kCOC-cJaw1VilbNhQ
 // 3(True API): https://ismotp.crptech.ru/api/v3/true-api/cises/aggregated/list?codes=000000462106549OOv1s0XzlzIFDjtcXJjz5cB&codes=(01)00000046210654(21)oFTjHaM&codes=00000046210654QuHCUeP
-//	Authorization: Bearer <ТОКЕН>
+//	Authorization: Bearer <РўРћРљР•Рќ>
 
 #include "hbvo.ch"
 #include "hbmacro.ch"
 #include "hbcurl.ch"
 
-	REQUEST HB_CODEPAGE_RU1251	// только для HBR100
+	REQUEST HB_CODEPAGE_RU1251	// С‚РѕР»СЊРєРѕ РґР»СЏ HBR100
 
 PROCEDURE Main()
 	LOCAL i, j, k, a, c, cMark, aMarks, aInt, aDir, cFile, oXml, oldLogging, iAction
 	LOCAL cName := "HonestSign"
 	LOCAL cVersion := "1.01"
-	LOCAL aActions := {	"Получить входящие документы",;
-				"Тест списка документов",;
-				"Тест агрегации",;
-				"Тест разбора документов", ;
-				"Тест поиска имен в XML"}
+	LOCAL aActions := {	"РџРѕР»СѓС‡РёС‚СЊ РІС…РѕРґСЏС‰РёРµ РґРѕРєСѓРјРµРЅС‚С‹",;
+				"РўРµСЃС‚ СЃРїРёСЃРєР° РґРѕРєСѓРјРµРЅС‚РѕРІ",;
+				"РўРµСЃС‚ Р°РіСЂРµРіР°С†РёРё",;
+				"РўРµСЃС‚ СЂР°Р·Р±РѕСЂР° РґРѕРєСѓРјРµРЅС‚РѕРІ", ;
+				"РўРµСЃС‚ РїРѕРёСЃРєР° РёРјРµРЅ РІ XML"}
 	LOCAL oCrpt
 	LOCAL oError
 
-//	PUBLIC fnc1 := e"\x1D"		// Символ M->fnc1 для GS1/DataMatrix или EAN128
+//	PUBLIC fnc1 := e"\x1D"		// РЎРёРјРІРѕР» M->fnc1 РґР»СЏ GS1/DataMatrix РёР»Рё EAN128
 
 	BEGIN SEQUENCE  WITH {|errobj| ErrMacro(errobj)}
 
 		IF !SetStd(cName, cVersion);	BREAK;	ENDIF
 		FErase("crpt.txt")
-		oCrpt := oCrpt{}				// Открытие сессии
+		oCrpt := oCrpt{}				// РћС‚РєСЂС‹С‚РёРµ СЃРµСЃСЃРёРё
 		IF !oCrpt:OK .OR. !oCrpt:Open();	BREAK "Unable to open session";			ENDIF
 		oldLogging := M->pubLogging
 
-		iAction := 1				// По умолчанию - Получить входящие документы
+		iAction := 1				// РџРѕ СѓРјРѕР»С‡Р°РЅРёСЋ - РџРѕР»СѓС‡РёС‚СЊ РІС…РѕРґСЏС‰РёРµ РґРѕРєСѓРјРµРЅС‚С‹
 
-		DO WHILE IsSet(oCrpt:iLog, 64) .OR. (iAction := MENU_ONE(,, aActions, "Выберите функцию")) # 0
+		DO WHILE IsSet(oCrpt:iLog, 64) .OR. (iAction := MENU_ONE(,, aActions, "Р’С‹Р±РµСЂРёС‚Рµ С„СѓРЅРєС†РёСЋ")) # 0
 			IF LastKey() = 27;	EXIT;	ENDIF
 			M->pubLogging := oldLogging
 			LowMes()
-			IF "Тест" $ aActions[iAction]		// Список тестируемых интерфейсов
+			IF "РўРµСЃС‚" $ aActions[iAction]		// РЎРїРёСЃРѕРє С‚РµСЃС‚РёСЂСѓРµРјС‹С… РёРЅС‚РµСЂС„РµР№СЃРѕРІ
 				aInt := oCrpt:aInterfaces
-				aInt := AskOne(Padr(aInt,10),"Список интерфейсов ",,"@S10")
+				aInt := AskOne(Padr(aInt,10),"РЎРїРёСЃРѕРє РёРЅС‚РµСЂС„РµР№СЃРѕРІ ",,"@S10")
 				IF IsNil(aInt);		EXIT;		ENDIF
 				aInt := AllTrim(aInt)
 			ENDIF
 			DO CASE
-				CASE iAction = 1		// Получить входящие документы
+				CASE iAction = 1		// РџРѕР»СѓС‡РёС‚СЊ РІС…РѕРґСЏС‰РёРµ РґРѕРєСѓРјРµРЅС‚С‹
 					k := 0
 					M->pubLogging := _Or(M->pubLogging, 2)		// NO DIALOG
 					oCrpt:SetInterface(oCrpt:cMInterface)
@@ -76,7 +76,7 @@ PROCEDURE Main()
 						NEXT
 					ENDIF
 					IF k > 0;	LowMes("Crpt: " + NTrim(k) + " recieved");	ENDIF
-				CASE iAction = 2		// Тест списка документов
+				CASE iAction = 2		// РўРµСЃС‚ СЃРїРёСЃРєР° РґРѕРєСѓРјРµРЅС‚РѕРІ
 					FOR i:=1 TO Len(aInt)
 						oCrpt:cDInterface := CharPos(aInt, i)
 						LogIt("crpt.txt", "Dok Interface: " + oCrpt:cDInterface)
@@ -87,7 +87,7 @@ PROCEDURE Main()
 							oCrpt:DList("ODList")
 						ENDIF
 					NEXT
-				CASE iAction = 3		// Тест агрегации
+				CASE iAction = 3		// РўРµСЃС‚ Р°РіСЂРµРіР°С†РёРё
 					FOR i:=1 TO Len(aInt)
 						oCrpt:cMInterface := CharPos(aInt, i)
 						LogIt("crpt.txt", "Marks Interface " + oCrpt:cMInterface)
@@ -101,7 +101,7 @@ PROCEDURE Main()
 							NEXT
 						ENDIF
 					NEXT
-				CASE iAction = 4		// Тест разбора документов
+				CASE iAction = 4		// РўРµСЃС‚ СЂР°Р·Р±РѕСЂР° РґРѕРєСѓРјРµРЅС‚РѕРІ
 					FOR i:=1 TO Len(aInt)
 						oCrpt:cMInterface := CharPos(aInt, i)
 						LogIt("crpt.txt", "Doc parsing " + oCrpt:cMInterface)
@@ -115,14 +115,14 @@ PROCEDURE Main()
 							NEXT
 						ENDIF
 					NEXT
-				CASE iAction = 5		// Тест поиска имен в XML
+				CASE iAction = 5		// РўРµСЃС‚ РїРѕРёСЃРєР° РёРјРµРЅ РІ XML
 					c := ""
-					DO WHILE !Empty(c := AskOne(Padr(c,100),"Поисковый запрос ",,"@S30"))
+					DO WHILE !Empty(c := AskOne(Padr(c,100),"РџРѕРёСЃРєРѕРІС‹Р№ Р·Р°РїСЂРѕСЃ ",,"@S30"))
 						c := AllTrim(c)
 						aDir := Directory(oCrpt:cFIDir + "*.xml")
 						FOR j:=1 TO Len(aDir)
 							cFile := oCrpt:cFIDir + aDir[j,F_NAME]
-							LogIt("crpt.txt", "Поиск " + c + " в " + cFile)
+							LogIt("crpt.txt", "РџРѕРёСЃРє " + c + " РІ " + cFile)
 							oXml := oXML{,, cFile}
 //							a := oXml[c]
 							a := oXml:FindNodes(c)		// As value
@@ -156,18 +156,18 @@ FUNCTION SetStd(cName, cVersion)
 	DefPub("macro_errb", {|oError| ErrMacro(oError)})
 	BEGIN SEQUENCE  WITH {|errobj| ErrMacro(errobj)}
 
-		IF MaxRow() = 299;	hb_Run("mode con cols=80 lines=25");	ENDIF	// Установлен дурацкий буфер экрана по умолчанию 300 строк
+		IF MaxRow() = 299;	hb_Run("mode con cols=80 lines=25");	ENDIF	// РЈСЃС‚Р°РЅРѕРІР»РµРЅ РґСѓСЂР°С†РєРёР№ Р±СѓС„РµСЂ СЌРєСЂР°РЅР° РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ 300 СЃС‚СЂРѕРє
 		kVert := INT((Maxrow() - 21) / 2)
-		hb_cdpSelect(hb_cdpOs())		// По умолчанию
+		hb_cdpSelect(hb_cdpOs())		// РџРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 
-		DefPub("fnc1", e"\x1D")			// Символ M->fnc1 для GS1/DataMatrix или EAN128
-		DefPub("pubLogging", 0)			// Режим логов (0 = Можно все), д.б. ЗДЕСЬ
-							// 	1	Запрет Логов
-							//	2	Запрет Диалогов
-							//	4	Запрет клавы
-							//	8	Запрет дублирования ошибки в LowMes
+		DefPub("fnc1", e"\x1D")			// РЎРёРјРІРѕР» M->fnc1 РґР»СЏ GS1/DataMatrix РёР»Рё EAN128
+		DefPub("pubLogging", 0)			// Р РµР¶РёРј Р»РѕРіРѕРІ (0 = РњРѕР¶РЅРѕ РІСЃРµ), Рґ.Р±. Р—Р”Р•РЎР¬
+							// 	1	Р—Р°РїСЂРµС‚ Р›РѕРіРѕРІ
+							//	2	Р—Р°РїСЂРµС‚ Р”РёР°Р»РѕРіРѕРІ
+							//	4	Р—Р°РїСЂРµС‚ РєР»Р°РІС‹
+							//	8	Р—Р°РїСЂРµС‚ РґСѓР±Р»РёСЂРѕРІР°РЅРёСЏ РѕС€РёР±РєРё РІ LowMes
 
-		DefPub("pubAds", 1)			// 1 - ADS для cSysCtl, 2 - ADS для прочих
+		DefPub("pubAds", 1)			// 1 - ADS РґР»СЏ cSysCtl, 2 - ADS РґР»СЏ РїСЂРѕС‡РёС…
 		LogStd(cName + " started")
 	        
 		SET DELETED ON
@@ -178,7 +178,7 @@ FUNCTION SetStd(cName, cVersion)
 		SET( _SET_EVENTMASK, INKEY_ALL) 
 		mSetCursor( .T. )
 	        
-// Экранная херня
+// Р­РєСЂР°РЅРЅР°СЏ С…РµСЂРЅСЏ
 		SETCOLOR("W/B,B/W,,,B/W")
 		CLEAR SCREEN
 		s := MEMOREAD("title.txt")		
@@ -187,7 +187,7 @@ FUNCTION SetStd(cName, cVersion)
 		FOR i:=1 TO kTitle
 			c := TRIM(MEMOLINE(s, Maxcol(), i))
 			IF (j:=At("V.M", c)) > 0
-				c := Left(c, j+2) + " " + cVersion + " от " + DToC(FDate(cName + ".exe"))
+				c := Left(c, j+2) + " " + cVersion + " РѕС‚ " + DToC(FDate(cName + ".exe"))
 			ENDIF
 			IF (j:=AT("2019-",c)) > 0;	c := STUFF(c, j+5, 4, STR(YEAR(DATE()),4));	ENDIF
 			@ i + kVert, l1 SAY c
@@ -200,74 +200,74 @@ FUNCTION SetStd(cName, cVersion)
 	RETURN r
 
 //---------- oCrpt ------------------------------------------------------------------------------------------------------------
-CLASS oCrpt INHERIT HObject	// Класс для работы с Честным знаком
+CLASS oCrpt INHERIT HObject	// РљР»Р°СЃСЃ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ Р§РµСЃС‚РЅС‹Рј Р·РЅР°РєРѕРј
 	CLASS VAR aSessions	INIT {}
-	PROTECT niSys 		INIT 1			// Текущая версия программы
-	PROTECT niRelease 	INIT 0			// Текущий релиз программы
+	PROTECT niSys 		INIT 1			// РўРµРєСѓС‰Р°СЏ РІРµСЂСЃРёСЏ РїСЂРѕРіСЂР°РјРјС‹
+	PROTECT niRelease 	INIT 0			// РўРµРєСѓС‰РёР№ СЂРµР»РёР· РїСЂРѕРіСЂР°РјРјС‹
 	PROTECT handle		INIT 0			// Session handle
 	PROTECT	aoDS		INIT {}			// oDS List
 	PROTECT intCp
-	EXPORT	lOpened		INIT .F.		// Сессия открыта
+	EXPORT	lOpened		INIT .F.		// РЎРµСЃСЃРёСЏ РѕС‚РєСЂС‹С‚Р°
 	PROTECT cLogFile 	INIT "errlog.txt"	// LOG
-	PROTECT cPath		INIT ""			// Базовый dir
+	PROTECT cPath		INIT ""			// Р‘Р°Р·РѕРІС‹Р№ dir
 	PROTECT aIni					//{ => } .INI file
 	PROTECT selfName 	INIT "HonestSign"
-	PROTECT	oCert		INIT NIL		// Объект сертификата для подписи
-	EXPORT	oCurl		INIT NIL		// Объект curl
-	EXPORT	token		INIT ""			// token сессии
+	PROTECT	oCert		INIT NIL		// РћР±СЉРµРєС‚ СЃРµСЂС‚РёС„РёРєР°С‚Р° РґР»СЏ РїРѕРґРїРёСЃРё
+	EXPORT	oCurl		INIT NIL		// РћР±СЉРµРєС‚ curl
+	EXPORT	token		INIT ""			// token СЃРµСЃСЃРёРё
 	EXPORT	lCurlExe	INIT .F.		// .T. - curl.exe, .F. - libcurl
 	EXPORT	Actions		INIT {"Token", "Auth", "IDList", "ODList", "IDoc", "ODoc", "Marks"}
 	EXPORT	hAct		INIT { => }
 
-//================= Из .ini файла ===============================================
-	EXPORT	iLog 		INIT 7			// /log=	0	Ничего не выводим
-							//		1	Ошибки
-							//		2	Основной протокол
-							//		4	Трассировка важных сообщений
-							//		8	Трассировка всех сообщений
-							//		16	Сохранение запросов и ответов
-							//		32	Игнорировать ошибки в дате
-							//		64	Автозапуск гашения без меню
-	EXPORT	iMode		INIT 0			// Режим:	1 - Вход в SignText преобразовать в Base64
-							//		2 - Выход из SignText преобразовать в Base64
-							//		4 - SignText: crptest.exe (иначе CAPICOM/CADESCOM), !!!Path!!!
-							//		8 - Отправка токена через curl.exe (иначе libcurl)
-							// Отправка токена работает при: 1, 8+1, 8+4
-	PROTECT	curlUrl		INIT ""			// Базовый url crpt
-	EXPORT	cThumbprint	INIT ""			// Thumbprint сертификата для подписи
-	EXPORT	keyPin		INIT ""			// PIN РуТокен
-//	PROTECT	cSysCtl		INIT ""			// Путь к БД
-	EXPORT	TLScert		INIT "curl-ca-bundle.crt"	// Путь к сертификату TLS/SSL
-	PROTECT	Limit		INIT 40			// Суточный лимит гашений
-	EXPORT	dOffset		INIT 0			// Последний день гашения = Date() + ::dOffset
-	EXPORT	iTimeOut	INIT 600		// TimeOut в сек. ожидания ответа не двойной запрос
-	EXPORT	iInterval 	INIT 10			// Интервал в сек. перезапроса ответа на двойной запрос
-	EXPORT	cInterface	INIT ""			// Текущая Версия интерфейса с ЦРПТ
-	EXPORT	cDInterface	INIT "A"		// Стандартный интерфейс для получения документов
-	EXPORT	cMInterface	INIT "A"		// Стандартный интерфейс для агрегирования марок
-	EXPORT	aInterfaces	INIT NIL		// Список доступных интерфейсов
-	EXPORT	cFIDir		INIT ""			// Директория для входящих файлов документов .xml
+//================= РР· .ini С„Р°Р№Р»Р° ===============================================
+	EXPORT	iLog 		INIT 7			// /log=	0	РќРёС‡РµРіРѕ РЅРµ РІС‹РІРѕРґРёРј
+							//		1	РћС€РёР±РєРё
+							//		2	РћСЃРЅРѕРІРЅРѕР№ РїСЂРѕС‚РѕРєРѕР»
+							//		4	РўСЂР°СЃСЃРёСЂРѕРІРєР° РІР°Р¶РЅС‹С… СЃРѕРѕР±С‰РµРЅРёР№
+							//		8	РўСЂР°СЃСЃРёСЂРѕРІРєР° РІСЃРµС… СЃРѕРѕР±С‰РµРЅРёР№
+							//		16	РЎРѕС…СЂР°РЅРµРЅРёРµ Р·Р°РїСЂРѕСЃРѕРІ Рё РѕС‚РІРµС‚РѕРІ
+							//		32	РРіРЅРѕСЂРёСЂРѕРІР°С‚СЊ РѕС€РёР±РєРё РІ РґР°С‚Рµ
+							//		64	РђРІС‚РѕР·Р°РїСѓСЃРє РіР°С€РµРЅРёСЏ Р±РµР· РјРµРЅСЋ
+	EXPORT	iMode		INIT 0			// Р РµР¶РёРј:	1 - Р’С…РѕРґ РІ SignText РїСЂРµРѕР±СЂР°Р·РѕРІР°С‚СЊ РІ Base64
+							//		2 - Р’С‹С…РѕРґ РёР· SignText РїСЂРµРѕР±СЂР°Р·РѕРІР°С‚СЊ РІ Base64
+							//		4 - SignText: crptest.exe (РёРЅР°С‡Рµ CAPICOM/CADESCOM), !!!Path!!!
+							//		8 - РћС‚РїСЂР°РІРєР° С‚РѕРєРµРЅР° С‡РµСЂРµР· curl.exe (РёРЅР°С‡Рµ libcurl)
+							// РћС‚РїСЂР°РІРєР° С‚РѕРєРµРЅР° СЂР°Р±РѕС‚Р°РµС‚ РїСЂРё: 1, 8+1, 8+4
+	PROTECT	curlUrl		INIT ""			// Р‘Р°Р·РѕРІС‹Р№ url crpt
+	EXPORT	cThumbprint	INIT ""			// Thumbprint СЃРµСЂС‚РёС„РёРєР°С‚Р° РґР»СЏ РїРѕРґРїРёСЃРё
+	EXPORT	keyPin		INIT ""			// PIN Р СѓРўРѕРєРµРЅ
+//	PROTECT	cSysCtl		INIT ""			// РџСѓС‚СЊ Рє Р‘Р”
+	EXPORT	TLScert		INIT "curl-ca-bundle.crt"	// РџСѓС‚СЊ Рє СЃРµСЂС‚РёС„РёРєР°С‚Сѓ TLS/SSL
+	PROTECT	Limit		INIT 40			// РЎСѓС‚РѕС‡РЅС‹Р№ Р»РёРјРёС‚ РіР°С€РµРЅРёР№
+	EXPORT	dOffset		INIT 0			// РџРѕСЃР»РµРґРЅРёР№ РґРµРЅСЊ РіР°С€РµРЅРёСЏ = Date() + ::dOffset
+	EXPORT	iTimeOut	INIT 600		// TimeOut РІ СЃРµРє. РѕР¶РёРґР°РЅРёСЏ РѕС‚РІРµС‚Р° РЅРµ РґРІРѕР№РЅРѕР№ Р·Р°РїСЂРѕСЃ
+	EXPORT	iInterval 	INIT 10			// РРЅС‚РµСЂРІР°Р» РІ СЃРµРє. РїРµСЂРµР·Р°РїСЂРѕСЃР° РѕС‚РІРµС‚Р° РЅР° РґРІРѕР№РЅРѕР№ Р·Р°РїСЂРѕСЃ
+	EXPORT	cInterface	INIT ""			// РўРµРєСѓС‰Р°СЏ Р’РµСЂСЃРёСЏ РёРЅС‚РµСЂС„РµР№СЃР° СЃ Р¦Р РџРў
+	EXPORT	cDInterface	INIT "A"		// РЎС‚Р°РЅРґР°СЂС‚РЅС‹Р№ РёРЅС‚РµСЂС„РµР№СЃ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РґРѕРєСѓРјРµРЅС‚РѕРІ
+	EXPORT	cMInterface	INIT "A"		// РЎС‚Р°РЅРґР°СЂС‚РЅС‹Р№ РёРЅС‚РµСЂС„РµР№СЃ РґР»СЏ Р°РіСЂРµРіРёСЂРѕРІР°РЅРёСЏ РјР°СЂРѕРє
+	EXPORT	aInterfaces	INIT NIL		// РЎРїРёСЃРѕРє РґРѕСЃС‚СѓРїРЅС‹С… РёРЅС‚РµСЂС„РµР№СЃРѕРІ
+	EXPORT	cFIDir		INIT ""			// Р”РёСЂРµРєС‚РѕСЂРёСЏ РґР»СЏ РІС…РѕРґСЏС‰РёС… С„Р°Р№Р»РѕРІ РґРѕРєСѓРјРµРЅС‚РѕРІ .xml
 	EXPORT	oUtm		INIT NIL
 
-//================= /Из .ini файла ===============================================
+//================= /РР· .ini С„Р°Р№Р»Р° ===============================================
 
-	METHOD Aggregate(cMark, cId, aMarks, aCurl)	// Запрос агрегирования марки cMark и внесение результата в aMarks
-	METHOD Authorize()				// Авторизация в CRPT
+	METHOD Aggregate(cMark, cId, aMarks, aCurl)	// Р—Р°РїСЂРѕСЃ Р°РіСЂРµРіРёСЂРѕРІР°РЅРёСЏ РјР°СЂРєРё cMark Рё РІРЅРµСЃРµРЅРёРµ СЂРµР·СѓР»СЊС‚Р°С‚Р° РІ aMarks
+	METHOD Authorize()				// РђРІС‚РѕСЂРёР·Р°С†РёСЏ РІ CRPT
 	METHOD Close()					// Close session
-	METHOD DList(cAction)				// Список документов CRPT
-	METHOD DParse(cFile)				// Разбор входящего документа из файла cFile, создание списка марок и запись в oUTM
-	METHOD MAggregate(cMark)			// Запрос агрегирования марки cMark
-	METHOD New()					// Создание: Без параметров, на случай OLE
-	METHOD Open()	// Инициализация
-	METHOD outLog(iFlag, cMsg, cAdd)		// Вывод сообщений
-	METHOD RestInterface(savInterface)		// Восстановление параметров текущего интерфейса
-	METHOD SaveInterface()				// Сохранение параметров текущего интерфейса
-	METHOD SetInterface(cInterface)			// Настройка описателя ::hAct для используемой версии интерфейса для каждой 
+	METHOD DList(cAction)				// РЎРїРёСЃРѕРє РґРѕРєСѓРјРµРЅС‚РѕРІ CRPT
+	METHOD DParse(cFile)				// Р Р°Р·Р±РѕСЂ РІС…РѕРґСЏС‰РµРіРѕ РґРѕРєСѓРјРµРЅС‚Р° РёР· С„Р°Р№Р»Р° cFile, СЃРѕР·РґР°РЅРёРµ СЃРїРёСЃРєР° РјР°СЂРѕРє Рё Р·Р°РїРёСЃСЊ РІ oUTM
+	METHOD MAggregate(cMark)			// Р—Р°РїСЂРѕСЃ Р°РіСЂРµРіРёСЂРѕРІР°РЅРёСЏ РјР°СЂРєРё cMark
+	METHOD New()					// РЎРѕР·РґР°РЅРёРµ: Р‘РµР· РїР°СЂР°РјРµС‚СЂРѕРІ, РЅР° СЃР»СѓС‡Р°Р№ OLE
+	METHOD Open()	// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
+	METHOD outLog(iFlag, cMsg, cAdd)		// Р’С‹РІРѕРґ СЃРѕРѕР±С‰РµРЅРёР№
+	METHOD RestInterface(savInterface)		// Р’РѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ РїР°СЂР°РјРµС‚СЂРѕРІ С‚РµРєСѓС‰РµРіРѕ РёРЅС‚РµСЂС„РµР№СЃР°
+	METHOD SaveInterface()				// РЎРѕС…СЂР°РЅРµРЅРёРµ РїР°СЂР°РјРµС‚СЂРѕРІ С‚РµРєСѓС‰РµРіРѕ РёРЅС‚РµСЂС„РµР№СЃР°
+	METHOD SetInterface(cInterface)			// РќР°СЃС‚СЂРѕР№РєР° РѕРїРёСЃР°С‚РµР»СЏ ::hAct РґР»СЏ РёСЃРїРѕР»СЊР·СѓРµРјРѕР№ РІРµСЂСЃРёРё РёРЅС‚РµСЂС„РµР№СЃР° РґР»СЏ РєР°Р¶РґРѕР№ 
 	
 ENDCLASS
 
 //---------- oCrpt:Aggregate ------------------------------------------------------------------------------------------------------
-METHOD Aggregate(cMark, cId, aMarks, aCurl) CLASS oCrpt	// Запрос агрегирования марки cMark и внесение результата в aMarks
+METHOD Aggregate(cMark, cId, aMarks, aCurl) CLASS oCrpt	// Р—Р°РїСЂРѕСЃ Р°РіСЂРµРіРёСЂРѕРІР°РЅРёСЏ РјР°СЂРєРё cMark Рё РІРЅРµСЃРµРЅРёРµ СЂРµР·СѓР»СЊС‚Р°С‚Р° РІ aMarks
 	LOCAL i, a, cCurl:="", oError, cType, jMark, kReply, maxReply:=10, iSleep:=60, kErr:=0, cErr
 	LOCAL aErr := {	"Empty answer",;
 			"No sublevels",;
@@ -281,25 +281,25 @@ METHOD Aggregate(cMark, cId, aMarks, aCurl) CLASS oCrpt	// Запрос агрегирования 
 	IF IsNil(cId);		cId := "";	ENDIF
 	IF IsNil(aMarks);	aMarks := {};	ENDIF
 	BEGIN SEQUENCE WITH {|oError| ErrMacro(oError)}
-		a := NormBar(XML2String(cMark), 1)			// Скобочный формат
+		a := NormBar(XML2String(cMark), 1)			// РЎРєРѕР±РѕС‡РЅС‹Р№ С„РѕСЂРјР°С‚
 		cMark := a[1]
-		IF Empty(cType := a[2]);	cType := "ЯУ";	ENDIF	// Короб
-		AAdd(aMarks, {cId, cType, cMark, 0, TabMrc(cMark), 0})	// tovId, ЯБ/ЯТ, Марка, КоличествоВУпаковке, МРЦ, err
+		IF Empty(cType := a[2]);	cType := "РЇРЈ";	ENDIF	// РљРѕСЂРѕР±
+		AAdd(aMarks, {cId, cType, cMark, 0, TabMrc(cMark), 0})	// tovId, РЇР‘/РЇРў, РњР°СЂРєР°, РљРѕР»РёС‡РµСЃС‚РІРѕР’РЈРїР°РєРѕРІРєРµ, РњР Р¦, err
 		jMark := Len(aMarks)
 
 		FOR kReply:=1 TO maxReply
 			kErr := 0
 			DO CASE
-				CASE cType = "ЯТ";	aMarks[jMark, 4] := 1		// Это пачка: Дальше не разбираем, количество = 0
-				CASE !Empty(aCurl)					// Поддерево марок уже есть. Если нет - запрос CRPT
-				CASE Empty(cCurl:=::MAggregate(cMark));	kErr := 1	// Пустой ответ
-				CASE cCurl = "[]";			kErr := 2	// Марка зарегистрирована, но не разбирается
-				CASE "curl:" $ cCurl;			kErr := 3	// Проблема с curl/связью
-				CASE '"code":404' $ cCurl;		kErr := 4	// Код не найден
+				CASE cType = "РЇРў";	aMarks[jMark, 4] := 1		// Р­С‚Рѕ РїР°С‡РєР°: Р”Р°Р»СЊС€Рµ РЅРµ СЂР°Р·Р±РёСЂР°РµРј, РєРѕР»РёС‡РµСЃС‚РІРѕ = 0
+				CASE !Empty(aCurl)					// РџРѕРґРґРµСЂРµРІРѕ РјР°СЂРѕРє СѓР¶Рµ РµСЃС‚СЊ. Р•СЃР»Рё РЅРµС‚ - Р·Р°РїСЂРѕСЃ CRPT
+				CASE Empty(cCurl:=::MAggregate(cMark));	kErr := 1	// РџСѓСЃС‚РѕР№ РѕС‚РІРµС‚
+				CASE cCurl = "[]";			kErr := 2	// РњР°СЂРєР° Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅР°, РЅРѕ РЅРµ СЂР°Р·Р±РёСЂР°РµС‚СЃСЏ
+				CASE "curl:" $ cCurl;			kErr := 3	// РџСЂРѕР±Р»РµРјР° СЃ curl/СЃРІСЏР·СЊСЋ
+				CASE '"code":404' $ cCurl;		kErr := 4	// РљРѕРґ РЅРµ РЅР°Р№РґРµРЅ
 				CASE "<title>50" $ cCurl;		kErr := 5	// Bad gateway, Service unavailable, Internal error...
-				CASE "error" $ Lower(cCurl);		kErr := 6	// Иная ошибка
+				CASE "error" $ Lower(cCurl);		kErr := 6	// РРЅР°СЏ РѕС€РёР±РєР°
 				CASE hb_jsonDecode(cCurl, @aCurl, hb_cdpSelect()) = 0
-									kErr := 7	// Ошибка разбора данных
+									kErr := 7	// РћС€РёР±РєР° СЂР°Р·Р±РѕСЂР° РґР°РЅРЅС‹С…
 			ENDCASE
 			cErr := DTOC(DATE()) + " " + Time() + " Aggregate: " + cMark + "  " + IIF(kErr = 0, "OK", aErr[kErr])
 			LowMes(cErr, IIF(kErr = 0, NIL, -2))
@@ -310,10 +310,10 @@ METHOD Aggregate(cMark, cId, aMarks, aCurl) CLASS oCrpt	// Запрос агрегирования 
 				hb_IdleSleep(iSleep)
 			NEXT
 		NEXT
-		aMarks[jMark,6] := kErr						// Код ошибки, если есть
+		aMarks[jMark,6] := kErr						// РљРѕРґ РѕС€РёР±РєРё, РµСЃР»Рё РµСЃС‚СЊ
 
 		IF !Empty(aCurl)
-			aMarks[jMark, 4] := Len(aCurl)			// В марку заносим число ее сыновей
+			aMarks[jMark, 4] := Len(aCurl)			// Р’ РјР°СЂРєСѓ Р·Р°РЅРѕСЃРёРј С‡РёСЃР»Рѕ РµРµ СЃС‹РЅРѕРІРµР№
 			FOR i:=1 TO Len(aCurl)
 				IF ValType (aCurl[i]) # "A";	aCurl[i] := {aCurl[i], {}};	ENDIF
 				::Aggregate(aCurl[i,1], cId, aMarks, aCurl[i,2])
@@ -326,43 +326,43 @@ METHOD Aggregate(cMark, cId, aMarks, aCurl) CLASS oCrpt	// Запрос агрегирования 
 	RETURN cCurl
 
 //---------- oCrpt:Authorize ------------------------------------------------------------------------------------------------------
-METHOD Authorize() CLASS oCrpt	// Авторизация в CRPT
+METHOD Authorize() CLASS oCrpt	// РђРІС‚РѕСЂРёР·Р°С†РёСЏ РІ CRPT
 	LOCAL a, r:=.T., cCurl, hCurl, cData, cJson
 	LOCAL oError
 
 	BEGIN SEQUENCE WITH {|oError| ErrMacro(oError)}
 
 		::token := NIL
-		IF Empty(::oCurl);					BREAK "cUrl не загружен";	ENDIF
+		IF Empty(::oCurl);					BREAK "cUrl РЅРµ Р·Р°РіСЂСѓР¶РµРЅ";	ENDIF
 		::oCurl:aDefOptions := {}
 
-// Запрос случайного числа для получения токена
-		IF Empty(cCurl := ::oCurl:Run(::hAct["Token"]));	BREAK "Ошибка запроса данных";	ENDIF
-		IF hb_jsonDecode(cCurl, @hCurl, hb_cdpSelect()) = 0;	BREAK "Ошибка разбора данных";	ENDIF
+// Р—Р°РїСЂРѕСЃ СЃР»СѓС‡Р°Р№РЅРѕРіРѕ С‡РёСЃР»Р° РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ С‚РѕРєРµРЅР°
+		IF Empty(cCurl := ::oCurl:Run(::hAct["Token"]));	BREAK "РћС€РёР±РєР° Р·Р°РїСЂРѕСЃР° РґР°РЅРЅС‹С…";	ENDIF
+		IF hb_jsonDecode(cCurl, @hCurl, hb_cdpSelect()) = 0;	BREAK "РћС€РёР±РєР° СЂР°Р·Р±РѕСЂР° РґР°РЅРЅС‹С…";	ENDIF
 		IF IsNil(hb_HGetDef(hCurl, "uuid")) .OR.;
 		   IsNil(hb_HGetDef(hCurl, "data"))
-			BREAK "Ошибка разбора"
+			BREAK "РћС€РёР±РєР° СЂР°Р·Р±РѕСЂР°"
 		ENDIF
 
-// Авторизация и запрос токена
+// РђРІС‚РѕСЂРёР·Р°С†РёСЏ Рё Р·Р°РїСЂРѕСЃ С‚РѕРєРµРЅР°
 		cData := hCurl["data"]
 		hCurl["data"] := SignText(hb_strToUTF8(cData), ::oCert, .F., ::keyPin, ::iMode)	// Attached
 		cJson := hb_jsonEncode(hCurl)
-		IF ::lCurlExe						// Отправка средствами curl.exe
+		IF ::lCurlExe						// РћС‚РїСЂР°РІРєР° СЃСЂРµРґСЃС‚РІР°РјРё curl.exe
 			cCurl := ::oCurl:Run(::hAct["Auth"],, cJson)
-		ELSE							// Отправка средствами curl_easy
+		ELSE							// РћС‚РїСЂР°РІРєР° СЃСЂРµРґСЃС‚РІР°РјРё curl_easy
 			a := {	{HB_CURLOPT_HTTPHEADER, {"content-type: application/json;charset=UTF-8"}},;
 				{HB_CURLOPT_POST, 1}, ;							// Specify the POST data
 				{HB_CURLOPT_POSTFIELDS, cJson}	}
 			cCurl := ::oCurl:Run(::hAct["Auth"], a)
 		ENDIF
-		IF Empty(cCurl);		BREAK "Ошибка токена";		ENDIF
+		IF Empty(cCurl);		BREAK "РћС€РёР±РєР° С‚РѕРєРµРЅР°";		ENDIF
 		IF "error" $ Lower(cCurl) .OR. !("token" $ cCurl)
 			LogIt("crpt.txt", "Error: " + hb_jsonEncode(hCurl) + CRLF + cCurl)
 			BREAK cCurl
 		ENDIF
 		LogIt("crpt.txt", "OK: " + cCurl)
-		IF hb_jsonDecode(cCurl, @hCurl, hb_cdpSelect()) = 0;	BREAK "Ошибка разбора токена";	ENDIF
+		IF hb_jsonDecode(cCurl, @hCurl, hb_cdpSelect()) = 0;	BREAK "РћС€РёР±РєР° СЂР°Р·Р±РѕСЂР° С‚РѕРєРµРЅР°";	ENDIF
 		::token := hCurl["token"]
 		r := !Empty(::token)
 	RECOVER USING oError
@@ -372,7 +372,7 @@ METHOD Authorize() CLASS oCrpt	// Авторизация в CRPT
 
 //---------- oCrpt:Close ----------------------------------------------------------------------------------------------------------
 METHOD Close() CLASS oCrpt		// Close session
-	::oCert := NIL			// Sic!!! Без этого, если ::oCert создан, все слетает в ACCESS VIOLATION
+	::oCert := NIL			// Sic!!! Р‘РµР· СЌС‚РѕРіРѕ, РµСЃР»Рё ::oCert СЃРѕР·РґР°РЅ, РІСЃРµ СЃР»РµС‚Р°РµС‚ РІ ACCESS VIOLATION
 	IF !Empty(::oUtm);	::oUtm:Close();		ENDIF
 	IF !Empty(::oCurl);	::oCurl:Close();	ENDIF
 	::outLog(2, "Session closed")
@@ -380,7 +380,7 @@ METHOD Close() CLASS oCrpt		// Close session
 	RETURN SELF
 
 //---------- oCrpt:DokList ------------------------------------------------------------------------------------------------------
-METHOD DList(cAction) CLASS oCrpt	// Список входящих документов CRPT
+METHOD DList(cAction) CLASS oCrpt	// РЎРїРёСЃРѕРє РІС…РѕРґСЏС‰РёС… РґРѕРєСѓРјРµРЅС‚РѕРІ CRPT
 	LOCAL a, cCurl, oError
 
 	BEGIN SEQUENCE WITH {|oError| ErrMacro(oError)}
@@ -389,20 +389,20 @@ METHOD DList(cAction) CLASS oCrpt	// Список входящих документов CRPT
 //&orderColumn=docDate&did=623136d3-7a9b-40c9-8ce3-8091e41f83aa&orderedColumnValue=2019-01-28T09:30:40.136Z
 //&pageDir=NEXT' -H 'content-type:application/json' -H 'Authorization: Bearer <>'
 
-// curl '<url стенда>/api/v3/true-api/doc/listV2?limit=10&order=DESC&orderColumn=docDate&did=623136d3-7a9b-40c9-8ce3-8091e41f83aa&orderedColumnValue=2019-01-28T09:30:40.136Z&pageDir=NEXT' -H 'content-type: application/json' -H 'Authorization: Bearer <ТОКЕН>'
+// curl '<url СЃС‚РµРЅРґР°>/api/v3/true-api/doc/listV2?limit=10&order=DESC&orderColumn=docDate&did=623136d3-7a9b-40c9-8ce3-8091e41f83aa&orderedColumnValue=2019-01-28T09:30:40.136Z&pageDir=NEXT' -H 'content-type: application/json' -H 'Authorization: Bearer <РўРћРљР•Рќ>'
 
 // https://int.edo.crpt.tech/api/v1/outgoing-documents
 // curl --location --request GET 'https://int.edo.crpt.tech/api/v1/outgoing-documents' \ --header 'authorization: Bearer eyJhbGciOiJIUzI1NiIsI...SpRMX7xBW-zJrUMZ7dLhytbcgmTSSI1ZrHorbb8'
 
 		IF IsNil(cAction);	cAction := "IDList";	ENDIF
-		IF ::lCurlExe						// Отправка средствами curl.exe
+		IF ::lCurlExe						// РћС‚РїСЂР°РІРєР° СЃСЂРµРґСЃС‚РІР°РјРё curl.exe
 			cCurl := ::oCurl:Run(::hAct[cAction], ::token)
-		ELSE							// Отправка средствами curl_easy
+		ELSE							// РћС‚РїСЂР°РІРєР° СЃСЂРµРґСЃС‚РІР°РјРё curl_easy
 			a := {	{HB_CURLOPT_HTTPHEADER, {"content-type: application/json"},;
 							{"Authorization: Bearer " + ::token}}}
 			cCurl := ::oCurl:Run(::hAct[cAction], a)
 		ENDIF
-		IF Empty(cCurl);		BREAK "Ошибка запроса";		ENDIF
+		IF Empty(cCurl);		BREAK "РћС€РёР±РєР° Р·Р°РїСЂРѕСЃР°";		ENDIF
 		IF "error" $ Lower(cCurl)
 			LogIt("crpt.txt", "Error: " + CRLF + cCurl)
 			BREAK cCurl
@@ -415,58 +415,58 @@ METHOD DList(cAction) CLASS oCrpt	// Список входящих документов CRPT
 	RETURN cCurl
 
 //---------- oCrpt:DParse ------------------------------------------------------------------------------------------------------
-METHOD DParse(cFile) CLASS oCrpt	// Разбор входящего документа из файла cFile, создание списка марок и запись в oUTM
+METHOD DParse(cFile) CLASS oCrpt	// Р Р°Р·Р±РѕСЂ РІС…РѕРґСЏС‰РµРіРѕ РґРѕРєСѓРјРµРЅС‚Р° РёР· С„Р°Р№Р»Р° cFile, СЃРѕР·РґР°РЅРёРµ СЃРїРёСЃРєР° РјР°СЂРѕРє Рё Р·Р°РїРёСЃСЊ РІ oUTM
 	LOCAL a, i, j, r:=.T., cMarks := "", oTabl, aTovs, aUpaks, cNomStr, aMarks, oXml, aInfPol, oDopSved, cMark, cType
 	LOCAL savInterface, oError
 
 	BEGIN SEQUENCE WITH {|oError| ErrMacro(oError)}
 		IF !(Upper(Right(cFile,4)) = ".XML");		cFile += ".xml";		ENDIF
-		IF !File(cFile);				BREAK "Нет файла";		ENDIF
+		IF !File(cFile);				BREAK "РќРµС‚ С„Р°Р№Р»Р°";		ENDIF
 		oXml := oXML{,, cFile}
-		IF Empty(oXml);					BREAK "Пустой документ";	ENDIF
-		IF Empty(oTabl := oXml["...ТаблСчФакт"]);	BREAK "Нет табличной части";	ENDIF
-		IF Empty(aTovs := oTabl:GetSons("СведТов"));	BREAK "Нет товаров";		ENDIF
-		aInfPol := oXml:FindNodes("ИдФайлИнфПол=")		// Ссылки на ранее полученные файлы
+		IF Empty(oXml);					BREAK "РџСѓСЃС‚РѕР№ РґРѕРєСѓРјРµРЅС‚";	ENDIF
+		IF Empty(oTabl := oXml["...РўР°Р±Р»РЎС‡Р¤Р°РєС‚"]);	BREAK "РќРµС‚ С‚Р°Р±Р»РёС‡РЅРѕР№ С‡Р°СЃС‚Рё";	ENDIF
+		IF Empty(aTovs := oTabl:GetSons("РЎРІРµРґРўРѕРІ"));	BREAK "РќРµС‚ С‚РѕРІР°СЂРѕРІ";		ENDIF
+		aInfPol := oXml:FindNodes("РРґР¤Р°Р№Р»РРЅС„РџРѕР»=")		// РЎСЃС‹Р»РєРё РЅР° СЂР°РЅРµРµ РїРѕР»СѓС‡РµРЅРЅС‹Рµ С„Р°Р№Р»С‹
 		
 		FOR i:=1 TO Len(aTovs)
 			aMarks := {}
-			cNomStr := aTovs[i,"НомСтр="]
-//			IF !Empty(oUpaks := aTovs[i, "...НомСредИдентТов"]) .AND. !Empty(aUpaks := oUpaks:GetSons("НомУпак"))
-			IF !Empty(oDopSved := aTovs[i, "ДопСведТов"])
-				IF !Empty(aUpaks := oDopSved:FindNodes("НомУпак"))		// Это упаковки маркированной фигни: Подключимся к сервису
+			cNomStr := aTovs[i,"РќРѕРјРЎС‚СЂ="]
+//			IF !Empty(oUpaks := aTovs[i, "...РќРѕРјРЎСЂРµРґРРґРµРЅС‚РўРѕРІ"]) .AND. !Empty(aUpaks := oUpaks:GetSons("РќРѕРјРЈРїР°Рє"))
+			IF !Empty(oDopSved := aTovs[i, "Р”РѕРїРЎРІРµРґРўРѕРІ"])
+				IF !Empty(aUpaks := oDopSved:FindNodes("РќРѕРјРЈРїР°Рє"))		// Р­С‚Рѕ СѓРїР°РєРѕРІРєРё РјР°СЂРєРёСЂРѕРІР°РЅРЅРѕР№ С„РёРіРЅРё: РџРѕРґРєР»СЋС‡РёРјСЃСЏ Рє СЃРµСЂРІРёСЃСѓ
 					IF IsNil(savInterface)			
 						savInterface := ::SaveInterface()
 						::SetInterface(::cMInterface)	
-						IF !::Authorize();	BREAK "Сервис недоступен";	ENDIF
+						IF !::Authorize();	BREAK "РЎРµСЂРІРёСЃ РЅРµРґРѕСЃС‚СѓРїРµРЅ";	ENDIF
 					ENDIF
 					FOR j:=1 TO Len(aUpaks)
 						::Aggregate(aUpaks[j], cNomStr, aMarks)
 					NEXT
 				ENDIF
-				IF !Empty(aUpaks := oDopSved:FindNodes("КИЗ"))			// Это единичная маркированная фигня: Не подключаемся к сервису, просто добавляем строку
+				IF !Empty(aUpaks := oDopSved:FindNodes("РљРР—"))			// Р­С‚Рѕ РµРґРёРЅРёС‡РЅР°СЏ РјР°СЂРєРёСЂРѕРІР°РЅРЅР°СЏ С„РёРіРЅСЏ: РќРµ РїРѕРґРєР»СЋС‡Р°РµРјСЃСЏ Рє СЃРµСЂРІРёСЃСѓ, РїСЂРѕСЃС‚Рѕ РґРѕР±Р°РІР»СЏРµРј СЃС‚СЂРѕРєСѓ
 					FOR j:=1 TO Len(aUpaks)
-						a := NormBar(XML2String(aUpaks[j]), 1)			// Скобочный формат
+						a := NormBar(XML2String(aUpaks[j]), 1)			// РЎРєРѕР±РѕС‡РЅС‹Р№ С„РѕСЂРјР°С‚
 						cMark := a[1]
-						cType := a[2]						// Тип марки
-						IF Empty(cType) .OR. cType = "ЯБ";	cType := "ЯЛ";	ENDIF	// Стандартная маркировка, Normbar может определить как ЯБ, но блока сигарет в КИЗ быть не может
-						AAdd(aMarks, {cNomStr, cType, cMark, 1, TabMrc(cMark), 0})	// tovId, ЯБ/ЯТ, Марка, КоличествоВУпаковке, МРЦ, err
+						cType := a[2]						// РўРёРї РјР°СЂРєРё
+						IF Empty(cType) .OR. cType = "РЇР‘";	cType := "РЇР›";	ENDIF	// РЎС‚Р°РЅРґР°СЂС‚РЅР°СЏ РјР°СЂРєРёСЂРѕРІРєР°, Normbar РјРѕР¶РµС‚ РѕРїСЂРµРґРµР»РёС‚СЊ РєР°Рє РЇР‘, РЅРѕ Р±Р»РѕРєР° СЃРёРіР°СЂРµС‚ РІ РљРР— Р±С‹С‚СЊ РЅРµ РјРѕР¶РµС‚
+						AAdd(aMarks, {cNomStr, cType, cMark, 1, TabMrc(cMark), 0})	// tovId, РЇР‘/РЇРў, РњР°СЂРєР°, РљРѕР»РёС‡РµСЃС‚РІРѕР’РЈРїР°РєРѕРІРєРµ, РњР Р¦, err
 					NEXT
 				ENDIF
 			ENDIF
-			FOR j:=1 TO Len(aMarks)		// {cId, cType, cMark, 0, TabMrc(cMark), 0}) tovId, ЯБ/ЯТ, Марка, КоличествоВУпаковке, МРЦ, err
+			FOR j:=1 TO Len(aMarks)		// {cId, cType, cMark, 0, TabMrc(cMark), 0}) tovId, РЇР‘/РЇРў, РњР°СЂРєР°, РљРѕР»РёС‡РµСЃС‚РІРѕР’РЈРїР°РєРѕРІРєРµ, РњР Р¦, err
 				cMarks +=	aMarks[j,1] + " " + ;		// tovId
-						aMarks[j,2] + " " + ;		// ЯУ/ЯБ/ЯТ
-						aMarks[j,3] + " " + ;		// Марка
-						NTrim(aMarks[j,4]) + " " + ;	// Число субмарок
-						NTrim(aMarks[j,5],2) + " " + ;	// МРЦ
-						NTrim(aMarks[j,6]) + CRLF	// Код ошибки (см, Utm:updTov())
+						aMarks[j,2] + " " + ;		// РЇРЈ/РЇР‘/РЇРў
+						aMarks[j,3] + " " + ;		// РњР°СЂРєР°
+						NTrim(aMarks[j,4]) + " " + ;	// Р§РёСЃР»Рѕ СЃСѓР±РјР°СЂРѕРє
+						NTrim(aMarks[j,5],2) + " " + ;	// РњР Р¦
+						NTrim(aMarks[j,6]) + CRLF	// РљРѕРґ РѕС€РёР±РєРё (СЃРј, Utm:updTov())
 			NEXT
 		NEXT
 
-// Регистрация в UTM
+// Р РµРіРёСЃС‚СЂР°С†РёСЏ РІ UTM
 
 		IF !Empty(::oUtm)
-			IF !::oUtm:EdoAppend(cFile, .F., aInfPol, cMarks);	BREAK "Документ игнорирован";	ENDIF
+			IF !::oUtm:EdoAppend(cFile, .F., aInfPol, cMarks);	BREAK "Р”РѕРєСѓРјРµРЅС‚ РёРіРЅРѕСЂРёСЂРѕРІР°РЅ";	ENDIF
 		ENDIF
 
 	RECOVER USING oError
@@ -477,7 +477,7 @@ METHOD DParse(cFile) CLASS oCrpt	// Разбор входящего документа из файла cFile, с
 	RETURN r
 
 //---------- oCrpt:MAggregate ------------------------------------------------------------------------------------------------------
-METHOD MAggregate(cMark) CLASS oCrpt	// Запрос агрегирования марки cMark
+METHOD MAggregate(cMark) CLASS oCrpt	// Р—Р°РїСЂРѕСЃ Р°РіСЂРµРіРёСЂРѕРІР°РЅРёСЏ РјР°СЂРєРё cMark
 	LOCAL a, cCurl:="", oError, cJson, cAction := "Marks"
 	LOCAL lPost := ("POST" $ ::hAct[cAction, 2])
 
@@ -489,20 +489,20 @@ METHOD MAggregate(cMark) CLASS oCrpt	// Запрос агрегирования марки cMark
 		ENDIF
 	        
 		DO CASE
-			CASE ::lCurlExe .AND. lPost				// Отправка средствами curl.exe, POST
+			CASE ::lCurlExe .AND. lPost				// РћС‚РїСЂР°РІРєР° СЃСЂРµРґСЃС‚РІР°РјРё curl.exe, POST
 				cCurl := ::oCurl:Run(::hAct[cAction], {::token, cMark}, cJson)
 	        
-			CASE !::lCurlExe .AND. lPost				// Отправка средствами curl_easy, POST
+			CASE !::lCurlExe .AND. lPost				// РћС‚РїСЂР°РІРєР° СЃСЂРµРґСЃС‚РІР°РјРё curl_easy, POST
 				a := {	{HB_CURLOPT_HTTPHEADER, {"content-type: application/json;charset=UTF-8"},;
 								{"Authorization: Bearer " + ::token}},;
 					{HB_CURLOPT_POST, 1}, ;			// Specify the POST data
 					{HB_CURLOPT_POSTFIELDS, cJson}	}
 				cCurl := ::oCurl:Run(::hAct[cAction], a)
 	        
-			CASE ::lCurlExe .AND. !lPost				// Отправка средствами curl.exe, GET
+			CASE ::lCurlExe .AND. !lPost				// РћС‚РїСЂР°РІРєР° СЃСЂРµРґСЃС‚РІР°РјРё curl.exe, GET
 				cCurl := ::oCurl:Run(::hAct[cAction], {::token, cMark})
 	        
-			CASE !::lCurlExe .AND. !lPost				// Отправка средствами curl_easy, GET
+			CASE !::lCurlExe .AND. !lPost				// РћС‚РїСЂР°РІРєР° СЃСЂРµРґСЃС‚РІР°РјРё curl_easy, GET
 				cAction := StrTran(::hAct[cAction, 1], "&2", cMark)
 				a := {	{HB_CURLOPT_HTTPHEADER, {"content-type: application/json"},;
 								{"Authorization: Bearer " + ::token}}}
@@ -522,17 +522,17 @@ METHOD MAggregate(cMark) CLASS oCrpt	// Запрос агрегирования марки cMark
 	RETURN cCurl
 
 //---------- oCrpt:New ----------------------------------------------------------------------------------------------------------
-METHOD New() CLASS oCrpt	// Создание объекта: Без параметров, на случай OLE
+METHOD New() CLASS oCrpt	// РЎРѕР·РґР°РЅРёРµ РѕР±СЉРµРєС‚Р°: Р‘РµР· РїР°СЂР°РјРµС‚СЂРѕРІ, РЅР° СЃР»СѓС‡Р°Р№ OLE
 	AAdd(::aSessions, SELF)
 	::handle := ALen(::aSessions)
 	::cPath := hb_dirBase()
 	::intCp := hb_cdpOs()
-	hb_cdpSelect(::intCp)		// По умолчанию
+	hb_cdpSelect(::intCp)		// РџРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 	LogStd(::selfName + " V.M " + NTrim(::niSys) + "." + NTrim(::niRelease))	
 	RETURN SELF
 
 //---------- oCrpt:Open ----------------------------------------------------------------------------------------------------------
-METHOD Open() CLASS oCrpt	// Открытие сессии, на случай OLE
+METHOD Open() CLASS oCrpt	// РћС‚РєСЂС‹С‚РёРµ СЃРµСЃСЃРёРё, РЅР° СЃР»СѓС‡Р°Р№ OLE
 
 	LOCAL cFile, oError
 
@@ -541,39 +541,39 @@ METHOD Open() CLASS oCrpt	// Открытие сессии, на случай OLE
 		DefPub("cSysCtl", "")
 
 		IF ::lOpened;				BREAK;				ENDIF
-		IF !File(cFile := ::selfName + ".ini");	BREAK cFile + " не найден";	ENDIF
+		IF !File(cFile := ::selfName + ".ini");	BREAK cFile + " РЅРµ РЅР°Р№РґРµРЅ";	ENDIF
 		IF !Empty(::aIni := hb_iniRead(cFile)["MAIN"])
-			::iLog		:= Val(hb_HGetDef(::aIni, "iLog",	NTrim(::iLog)))		// Уровень сообщений в Log
-			::iMode		:= Val(hb_HGetDef(::aIni, "iMode",	NTrim(::iMode)))	// Режимы работы
-			::Limit		:= Val(hb_HGetDef(::aIni, "Limit",	NTrim(::Limit)))	// Суточный лимит гашений
-			::dOffset	:= Val(hb_HGetDef(::aIni, "dOffset",	NTrim(::dOffset)))	// Последний день гашения = Date() + ::dOffset
-			::iTimeOut	:= Val(hb_HGetDef(::aIni, "iTimeOut",	NTrim(::iTimeOut)))	// TimeOut в сек. ожидания ответа не двойной запрос
-			::iInterval	:= Val(hb_HGetDef(::aIni, "iInterval",	NTrim(::iInterval)))	// Интервал в сек. перезапроса ответа на двойной запрос
+			::iLog		:= Val(hb_HGetDef(::aIni, "iLog",	NTrim(::iLog)))		// РЈСЂРѕРІРµРЅСЊ СЃРѕРѕР±С‰РµРЅРёР№ РІ Log
+			::iMode		:= Val(hb_HGetDef(::aIni, "iMode",	NTrim(::iMode)))	// Р РµР¶РёРјС‹ СЂР°Р±РѕС‚С‹
+			::Limit		:= Val(hb_HGetDef(::aIni, "Limit",	NTrim(::Limit)))	// РЎСѓС‚РѕС‡РЅС‹Р№ Р»РёРјРёС‚ РіР°С€РµРЅРёР№
+			::dOffset	:= Val(hb_HGetDef(::aIni, "dOffset",	NTrim(::dOffset)))	// РџРѕСЃР»РµРґРЅРёР№ РґРµРЅСЊ РіР°С€РµРЅРёСЏ = Date() + ::dOffset
+			::iTimeOut	:= Val(hb_HGetDef(::aIni, "iTimeOut",	NTrim(::iTimeOut)))	// TimeOut РІ СЃРµРє. РѕР¶РёРґР°РЅРёСЏ РѕС‚РІРµС‚Р° РЅРµ РґРІРѕР№РЅРѕР№ Р·Р°РїСЂРѕСЃ
+			::iInterval	:= Val(hb_HGetDef(::aIni, "iInterval",	NTrim(::iInterval)))	// РРЅС‚РµСЂРІР°Р» РІ СЃРµРє. РїРµСЂРµР·Р°РїСЂРѕСЃР° РѕС‚РІРµС‚Р° РЅР° РґРІРѕР№РЅРѕР№ Р·Р°РїСЂРѕСЃ
 
-			::cThumbprint	:= hb_HGetDef(::aIni, "cThumbprint",	::cThumbprint)	// Thumbprint сертификата для подписи
-			::keyPin	:= hb_HGetDef(::aIni, "keyPin",		::keyPin)	// PIN РуТокен
-			M->cSysCtl	:= hb_HGetDef(::aIni, "cSysCtl",	M->cSysCtl)	// Путь к БД
-			::TLScert	:= hb_HGetDef(::aIni, "TLScert",	::TLScert)	// Сертификат TLS/SSL
-			::cDInterface	:= hb_HGetDef(::aIni, "cDInterface",	::cDInterface)	// Стандартный интерфейс для получения документов
-			::cMInterface	:= hb_HGetDef(::aIni, "cMInterface",	::cMInterface)	// Стандартный интерфейс для агрегирования марок
+			::cThumbprint	:= hb_HGetDef(::aIni, "cThumbprint",	::cThumbprint)	// Thumbprint СЃРµСЂС‚РёС„РёРєР°С‚Р° РґР»СЏ РїРѕРґРїРёСЃРё
+			::keyPin	:= hb_HGetDef(::aIni, "keyPin",		::keyPin)	// PIN Р СѓРўРѕРєРµРЅ
+			M->cSysCtl	:= hb_HGetDef(::aIni, "cSysCtl",	M->cSysCtl)	// РџСѓС‚СЊ Рє Р‘Р”
+			::TLScert	:= hb_HGetDef(::aIni, "TLScert",	::TLScert)	// РЎРµСЂС‚РёС„РёРєР°С‚ TLS/SSL
+			::cDInterface	:= hb_HGetDef(::aIni, "cDInterface",	::cDInterface)	// РЎС‚Р°РЅРґР°СЂС‚РЅС‹Р№ РёРЅС‚РµСЂС„РµР№СЃ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РґРѕРєСѓРјРµРЅС‚РѕРІ
+			::cMInterface	:= hb_HGetDef(::aIni, "cMInterface",	::cMInterface)	// РЎС‚Р°РЅРґР°СЂС‚РЅС‹Р№ РёРЅС‚РµСЂС„РµР№СЃ РґР»СЏ Р°РіСЂРµРіРёСЂРѕРІР°РЅРёСЏ РјР°СЂРѕРє
 		ENDIF
 
 // DataBase
-		IF !Empty(M->cSysCtl)				// Есть БД
+		IF !Empty(M->cSysCtl)				// Р•СЃС‚СЊ Р‘Р”
 			IF Right(M->cSysCtl,1) # "\";	M->cSysCtl += "\";	ENDIF
 			SetAds()
 			::oUtm := UTM{}
 		ENDIF
 // Curl
 		::lCurlExe := IsSet(::iMode,8)			// libcurl/curl.exe
-		::SetInterface()				// Настройка интерфейса ::hAct для используемой версии интерфейса для каждой функции из ::Actions
+		::SetInterface()				// РќР°СЃС‚СЂРѕР№РєР° РёРЅС‚РµСЂС„РµР№СЃР° ::hAct РґР»СЏ РёСЃРїРѕР»СЊР·СѓРµРјРѕР№ РІРµСЂСЃРёРё РёРЅС‚РµСЂС„РµР№СЃР° РґР»СЏ РєР°Р¶РґРѕР№ С„СѓРЅРєС†РёРё РёР· ::Actions
 		IF Empty(::oCurl);	::oCurl := oCurl{::curlUrl, ::lCurlExe, ::TLScert, ::iLog};	ENDIF
-		IF Empty(::oCurl);	BREAK "Ошибка загрузки cUrl";		ENDIF
+		IF Empty(::oCurl);	BREAK "РћС€РёР±РєР° Р·Р°РіСЂСѓР·РєРё cUrl";		ENDIF
 
-// Проверка сертификата при загрузке
-		IF Empty(::oCert := GetCert(::cThumbPrint));		BREAK;	ENDIF		// Сертификат по отпечатку
-		IF !(StrTran(::cThumbPrint," ","") == StrTran(::oCert:Thumbprint," ","")) 	// Сертификат обновлен
-			::aIni["cThumbprint"] := ::oCert:Thumbprint				// Обновим .ini
+// РџСЂРѕРІРµСЂРєР° СЃРµСЂС‚РёС„РёРєР°С‚Р° РїСЂРё Р·Р°РіСЂСѓР·РєРµ
+		IF Empty(::oCert := GetCert(::cThumbPrint));		BREAK;	ENDIF		// РЎРµСЂС‚РёС„РёРєР°С‚ РїРѕ РѕС‚РїРµС‡Р°С‚РєСѓ
+		IF !(StrTran(::cThumbPrint," ","") == StrTran(::oCert:Thumbprint," ","")) 	// РЎРµСЂС‚РёС„РёРєР°С‚ РѕР±РЅРѕРІР»РµРЅ
+			::aIni["cThumbprint"] := ::oCert:Thumbprint				// РћР±РЅРѕРІРёРј .ini
 			hb_iniWrite(::selfName + ".ini", { "MAIN" => ::aIni })
 		ENDIF
 
@@ -588,7 +588,7 @@ METHOD Open() CLASS oCrpt	// Открытие сессии, на случай OLE
 	RETURN ::lOpened
 
 //---------- oCrpt:outLog ----------------------------------------------------------------------------------------------------------
-METHOD outLog(iFlag, cMsg, cAdd) CLASS oCrpt		// Вывод сообщений
+METHOD outLog(iFlag, cMsg, cAdd) CLASS oCrpt		// Р’С‹РІРѕРґ СЃРѕРѕР±С‰РµРЅРёР№
 	IF IsSet(iFlag, ::ILog)
 		IF iFlag = 1 .OR. cMsg = "*"
 			LogErr(cMsg, cAdd)
@@ -602,7 +602,7 @@ METHOD outLog(iFlag, cMsg, cAdd) CLASS oCrpt		// Вывод сообщений
 	RETURN .T.
 
 //---------- oCrpt:RestInterface -------------------------------------------------------------------------------------
-METHOD RestInterface(savInterface) CLASS oCrpt	// Восстановление параметров текущего интерфейса
+METHOD RestInterface(savInterface) CLASS oCrpt	// Р’РѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ РїР°СЂР°РјРµС‚СЂРѕРІ С‚РµРєСѓС‰РµРіРѕ РёРЅС‚РµСЂС„РµР№СЃР°
 	IF !Empty(savInterface)
 		::SetInterface(savInterface[1])
 		::token := savInterface[2]
@@ -610,16 +610,16 @@ METHOD RestInterface(savInterface) CLASS oCrpt	// Восстановление параметров теку
 	RETURN SELF
 
 //---------- oCrpt:SaveInterface -------------------------------------------------------------------------------------
-METHOD SaveInterface() CLASS oCrpt	// Сохранение параметров текущего интерфейса
+METHOD SaveInterface() CLASS oCrpt	// РЎРѕС…СЂР°РЅРµРЅРёРµ РїР°СЂР°РјРµС‚СЂРѕРІ С‚РµРєСѓС‰РµРіРѕ РёРЅС‚РµСЂС„РµР№СЃР°
 	RETURN {::cInterface, ::token}
 
 //---------- oCrpt:SetInterface -------------------------------------------------------------------------------------
-METHOD SetInterface(cInterface) CLASS oCrpt	// Настройка описателя ::hAct для используемой версии интерфейса для 
-	LOCAL i, j, c, c2			// каждой функции из ::Actions и создание списка доступных интерфейсов
+METHOD SetInterface(cInterface) CLASS oCrpt	// РќР°СЃС‚СЂРѕР№РєР° РѕРїРёСЃР°С‚РµР»СЏ ::hAct РґР»СЏ РёСЃРїРѕР»СЊР·СѓРµРјРѕР№ РІРµСЂСЃРёРё РёРЅС‚РµСЂС„РµР№СЃР° РґР»СЏ 
+	LOCAL i, j, c, c2			// РєР°Р¶РґРѕР№ С„СѓРЅРєС†РёРё РёР· ::Actions Рё СЃРѕР·РґР°РЅРёРµ СЃРїРёСЃРєР° РґРѕСЃС‚СѓРїРЅС‹С… РёРЅС‚РµСЂС„РµР№СЃРѕРІ
 
 	IF Empty(cInterface);	cInterface := ::cDInterface;	ENDIF
 	IF IsNil(::aInterfaces)
-		::aInterfaces := ""			// Список доступных интерфейсов из имеющихся в .ini curlUrlX
+		::aInterfaces := ""			// РЎРїРёСЃРѕРє РґРѕСЃС‚СѓРїРЅС‹С… РёРЅС‚РµСЂС„РµР№СЃРѕРІ РёР· РёРјРµСЋС‰РёС…СЃСЏ РІ .ini curlUrlX
 		FOR j := Asc("A") TO Asc("Z")
 			c := Chr(j)
 			IF hb_HHasKey(::aIni, "curlUrl" + c);	::aInterfaces += c;	ENDIF
@@ -627,23 +627,23 @@ METHOD SetInterface(cInterface) CLASS oCrpt	// Настройка описателя ::hAct для ис
 	ENDIF
 	IF !(::cInterface == cInterface)
 		::cInterface := cInterface
-		::token := ""					// Чтоб не попал с чужого интерфейса
+		::token := ""					// Р§С‚РѕР± РЅРµ РїРѕРїР°Р» СЃ С‡СѓР¶РѕРіРѕ РёРЅС‚РµСЂС„РµР№СЃР°
 		::cFIDir := hb_HGetDef(::aIni, "cFIDir" + cInterface, "")
-		::curlUrl := ::aIni["curlUrl" + cInterface]	// Базовый url версии интерфейса
-		IF !Empty(::oCurl)				// Надо также заменить его в oCurl
+		::curlUrl := ::aIni["curlUrl" + cInterface]	// Р‘Р°Р·РѕРІС‹Р№ url РІРµСЂСЃРёРё РёРЅС‚РµСЂС„РµР№СЃР°
+		IF !Empty(::oCurl)				// РќР°РґРѕ С‚Р°РєР¶Рµ Р·Р°РјРµРЅРёС‚СЊ РµРіРѕ РІ oCurl
 			::oCurl:baseUrl := ::curlUrl
 		ENDIF
-		::hAct	  := { => }				// Описатели функций: {{Доп.url, строка curl.exe}}
+		::hAct	  := { => }				// РћРїРёСЃР°С‚РµР»Рё С„СѓРЅРєС†РёР№: {{Р”РѕРї.url, СЃС‚СЂРѕРєР° curl.exe}}
 		FOR i:=1 TO Len(::Actions)
 			c := hb_HGetDef(::aIni, "curl" + ::Actions[i] + cInterface)
 			IF !IsNil(c)
-				c := AllTrim(c)			// Исходный описатель из .ini
+				c := AllTrim(c)			// РСЃС…РѕРґРЅС‹Р№ РѕРїРёСЃР°С‚РµР»СЊ РёР· .ini
 				c2 := ""
 				IF (j := At(",", c)) > 0
 					c2 := AllTrim(Substr(c, j+1))
 					c := AllTrim(Left(c, j-1))
 				ENDIF
-				::hAct[::Actions[i]] := {c, c2}	// Описатель функции: {Доп.url, строка curl.exe}
+				::hAct[::Actions[i]] := {c, c2}	// РћРїРёСЃР°С‚РµР»СЊ С„СѓРЅРєС†РёРё: {Р”РѕРї.url, СЃС‚СЂРѕРєР° curl.exe}
 			ENDIF
 		NEXT
 	ENDIF

@@ -8,12 +8,12 @@
 #include "hbmxml.ch"
 
 STATIC s_mxml_error_msg := ""
-STATIC ILog := 7			// /log=	0	Ничего не выводим
-					//		1	Ошибки
-					//		2	Основной протокол
-					//		4	Трассировка важных сообщений
-					//		8	Трассировка всех сообщений
-					//		16	Трассировка импортируемых строк
+STATIC ILog := 7			// /log=	0	РќРёС‡РµРіРѕ РЅРµ РІС‹РІРѕРґРёРј
+					//		1	РћС€РёР±РєРё
+					//		2	РћСЃРЅРѕРІРЅРѕР№ РїСЂРѕС‚РѕРєРѕР»
+					//		4	РўСЂР°СЃСЃРёСЂРѕРІРєР° РІР°Р¶РЅС‹С… СЃРѕРѕР±С‰РµРЅРёР№
+					//		8	РўСЂР°СЃСЃРёСЂРѕРІРєР° РІСЃРµС… СЃРѕРѕР±С‰РµРЅРёР№
+					//		16	РўСЂР°СЃСЃРёСЂРѕРІРєР° РёРјРїРѕСЂС‚РёСЂСѓРµРјС‹С… СЃС‚СЂРѕРє
 STATIC cLogFile := ""			// LOG
 
 //-------------------------------------------------------------------------------------------
@@ -328,8 +328,8 @@ METHOD FromXML(sXml, cElement) CLASS oXML	// Filling (mxml) oXML tree from sXml 
 	ENDIF
 	IF !Empty(pRoot)
 		::NodeToObj(SELF, pRoot)
-// Outerr("After FromXML")				// выводится почему-то всегда ДО всего лога C
-// LogIt("stderr", "After FromXML" + CRLF)		// не выводится ваще
+// Outerr("After FromXML")				// РІС‹РІРѕРґРёС‚СЃСЏ РїРѕС‡РµРјСѓ-С‚Рѕ РІСЃРµРіРґР° Р”Рћ РІСЃРµРіРѕ Р»РѕРіР° C
+// LogIt("stderr", "After FromXML" + CRLF)		// РЅРµ РІС‹РІРѕРґРёС‚СЃСЏ РІР°С‰Рµ
 // Stderr("After FromXML")				// It works
 		mxmlDelete(pRoot)
 	ENDIF
@@ -548,7 +548,7 @@ AltD()
 aa := HB_MXMLGETATTRSARRAY( pNode )
 aa := HB_MXMLGETATTRSARRC( pNode )
 aa := MXMLGETCDATA( pNode )
-aa := MXMLELEMENTGETATTR( pNode, "ААА")
+aa := MXMLELEMENTGETATTR( pNode, "РђРђРђ")
 aa := MXMLELEMENTGETATTR( pNode, "AAA")
 j := 10000
 aa := MXMLGETTEXT( pNode, @j )
@@ -881,7 +881,7 @@ METHOD Value(uValue) CLASS oXML	// Access/Assign cXmlValue
 	RETURN ::cXmlValue
 
 //-------------------------------------------------------------------------------------------
-STATIC FUNCTION NTRIM(n)			// Выдача числа/числовой строки без ведущих пробелов
+STATIC FUNCTION NTRIM(n)			// Р’С‹РґР°С‡Р° С‡РёСЃР»Р°/С‡РёСЃР»РѕРІРѕР№ СЃС‚СЂРѕРєРё Р±РµР· РІРµРґСѓС‰РёС… РїСЂРѕР±РµР»РѕРІ
 	LOCAL c
 	IF ValType(n) $ "CM";	n := Val(AllTrim(n));	ENDIF
 	c := AllTrim(STR(n,20,4))
@@ -911,10 +911,10 @@ METHOD ShowNode(pNode, cText) CLASS oXml	// Show Node info
 	RETURN .T.	
 
 // ========== Log ======================================
-STATIC FUNCTION outLog(iFlag, cMsg)		// Вывод сообщений
+STATIC FUNCTION outLog(iFlag, cMsg)		// Р’С‹РІРѕРґ СЃРѕРѕР±С‰РµРЅРёР№
 	LOCAL h, cPath
 	IF IsSet(iFlag, iLog)
-//		? cMsg				// Пока так
+//		? cMsg				// РџРѕРєР° С‚Р°Рє
 		IF Empty(cLogFile)
 			cPath := hb_dirBase()
 			cLogFile := cPath + "\errlog\errLog.txt"
@@ -932,7 +932,7 @@ STATIC FUNCTION outLog(iFlag, cMsg)		// Вывод сообщений
 	ENDIF
 	RETURN .T.
 
-STATIC FUNCTION mxmlFindFirst(pRoot, cMsg)		// Вывод дерева
+STATIC FUNCTION mxmlFindFirst(pRoot, cMsg)		// Р’С‹РІРѕРґ РґРµСЂРµРІР°
 	LOCAL pFound
 	IF IsNil(cMsg); cMsg := "";	ENDIF
 	IF !Empty(pRoot)
@@ -950,10 +950,10 @@ STATIC FUNCTION mxmlFindFirst(pRoot, cMsg)		// Вывод дерева
 //	IF !Empty(pFound);	ShowNode(pFound, "pFound = ");	ENDIF
 	RETURN pFound
 
-STATIC FUNCTION mxmlCheckNode(pRoot)		// Вывод дерева
+STATIC FUNCTION mxmlCheckNode(pRoot)		// Р’С‹РІРѕРґ РґРµСЂРµРІР°
 	RETURN IIF(mxmlGetType( pRoot ) = MXML_ELEMENT .AND. !(mxmlGetElement(pRoot) = "?"), pRoot, NIL)
 	
-STATIC FUNCTION ErrGen(cMsg)			// Генерация Ошибки
+STATIC FUNCTION ErrGen(cMsg)			// Р“РµРЅРµСЂР°С†РёСЏ РћС€РёР±РєРё
 	LOCAL oError := ErrorNew()
 	oError:severity    := ES_ERROR
 	oError:genCode     := EG_LIMIT
